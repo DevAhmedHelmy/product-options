@@ -16,13 +16,11 @@ use App\Http\Controllers\VariationController;
 */
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
 
 Route::middleware(['auth'])->group(function(){
 
-    Route::get('/dashboard', function () {
+    Route::get('/', function () {
         return view('admin.dashboard');
     })->name('dashboard');
 

@@ -9,6 +9,22 @@
 </div>
 <div class="row">
     <div class="col-12">
+
+
+        @if(count($errors) > 0 )
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <ul class="p-0 m-0" style="list-style: none;">
+                @foreach($errors->all() as $error)
+                <li>{{$error}}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+    </div>
+    <div class="col-12">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">Add New Product</h6>
@@ -22,7 +38,7 @@
                     </div>
                     <div class="form-group">
                         <label for="name">Product Description</label>
-                        <textarea class="form-control"  name="description" id="" cols="30" rows="2"></textarea>
+                        <textarea class="form-control" name="description" id="" cols="30" rows="2"></textarea>
 
                     </div>
                     <hr>
@@ -51,11 +67,12 @@
 
                             <div class="col">
                                 <label> price</label>
-                                <input type="text" name="prices[]" class="form-control" placeholder="price">
+                                <input type="number" min="1" name="prices[]" class="form-control" placeholder="price">
                             </div>
                             <div class="col">
                                 <label> quantity</label>
-                                <input type="text" name="quantities[]" class="form-control" placeholder="quantity">
+                                <input type="number" min="1" name="quantities[]" class="form-control"
+                                    placeholder="quantity">
                             </div>
                         </div>
 
@@ -88,17 +105,14 @@
 
 @push('js')
 <script>
+$variations = @json($variations);
+var number = 0;
 
+$('#button-repeat').on('click', function(e) {
+    e.preventDefault();
 
-
-    $variations = @json($variations);
-    var number = 0;
-
-    $('#button-repeat').on('click', function(e) {
-        e.preventDefault();
-
-        number++;
-        const content = `<div class="row">
+    number++;
+    const content = `<div class="row">
                             <div class="col">
                                 <label> Variations</label>
                                 <select class="form-control" name="variations[]" id="variation-${number}">
@@ -146,32 +160,31 @@
 
 
 </div>`;
-$('.items').append(content);
+    $('.items').append(content);
 
-    });
-    $(document).on('click', '.delete-repeat', function() {
+});
+$(document).on('click', '.delete-repeat', function() {
 
-        $(this).closest(".row").remove();
-        number--;
-    });
-    $(`#variation-${number}`).on('change', function(e) {
+    $(this).closest(".row").remove();
+    number--;
+});
+$(`#variation-${number}`).on('change', function(e) {
 
-        let selected = $(this).val();
+    let selected = $(this).val();
 
-        const map1 = $variations.filter(function(item) {
+    const map1 = $variations.filter(function(item) {
 
-            if (item.id == selected) {
+        if (item.id == selected) {
 
-                return item
-            }
-        });
-        for (let i = 0; i < map1[0].options.length; i++) {
-            $(`#option-${number}`).append('<option value=' + map1[0].options[i].id + '>' + map1[0]
-                .options[i].name +
-                '</option>');
+            return item
         }
-
     });
+    for (let i = 0; i < map1[0].options.length; i++) {
+        $(`#option-${number}`).append('<option value=' + map1[0].options[i].id + '>' + map1[0]
+            .options[i].name +
+            '</option>');
+    }
 
+});
 </script>
 @endpush
