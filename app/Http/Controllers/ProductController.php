@@ -42,8 +42,8 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         $product = Product::create(["name"=>$request->name,"description"=>$request->description]);
-        $product->variations()->sync(($this->customSync($request->all(),$product->id)));
 
+        $product->variations()->sync($this->customSync($request->all(),$product->id));
         return redirect()->route('products.index')->with('success', 'The transaction was done successfully');
 
     }
@@ -84,7 +84,8 @@ class ProductController extends Controller
     public function update(ProductRequest $request, Product $product)
     {
         $product->update(["name"=>$request->name]);
-        $product->variations()->sync(($this->customSync($request->all(),$product->id)));
+        $product->variations()->sync($this->customSync($request->all(),$product->id));
+
         return redirect()->route('products.index')->with('success', 'The transaction was done successfully');
     }
 
@@ -104,14 +105,21 @@ class ProductController extends Controller
     {
         $newData = [];
         foreach($data['variations'] as $key => $item){
-            $row=[];
-            $row['variation_id']=$item;
-            $row['option_id']=$data['options'][$key];
-            $row['price']=$data['prices'][$key];
-            $row['quantity']=$data['quantities'][$key];
-            $newData[$product_id]=$row;
+
+            $newData[$item]=[
+                'variation_id'=>$item,
+                'option_id'=>$data['options'][$key],
+                'price'=>$data['prices'][$key],
+                'quantity'=>$data['quantities'][$key],
+                'product_id'=>$product_id,
+            ];
+
+
 
         }
         return $newData;
     }
+
+
+
 }

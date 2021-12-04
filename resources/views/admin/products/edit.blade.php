@@ -33,23 +33,24 @@
                     <h4>variations</h4>
                     <div class="items">
                         @if(! empty($product->variations))
-                        @foreach($product->variations as $item)
+                        @foreach($product->variations as $key => $item)
 
                         <div class="row">
                             <div class="col">
                                 <label> Variations</label>
-                                <select class="form-control" name="variations[]" id="variation-0">
+                                <select class="form-control" name="variations[]" id="variation-{{$key}}">
 
                                     <option>Choose</option>
                                     @foreach($variations as $variation)
-                                    <option @if($product->variations->contains('id',$variation->id)) selected @endif
+                                    <option @if($item->pivot->variation_id == $variation->id) selected @endif
                                         value="{{$variation->id}}">{{$variation->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="col">
                                 <label> Options</label>
-                                <select class="form-control" name="options[]" id="option-0">
+                                <select class="form-control" onChange=`changeOptions(event,${number})` name="options[]"
+                                    id="option-{{$key}}">
 
                                     <option>Choose</option>
                                     @foreach($item->options as $option)
@@ -99,16 +100,19 @@
 @push('js')
 <script>
 $variations = @json($variations);
-var number = 0;
+$productVariations = @json($product->variations);
+
+var number = $productVariations.length;
+
 
 $('#button-repeat').on('click', function(e) {
     e.preventDefault();
 
-    number++;
+
     const content = `<div class="row">
                             <div class="col">
                                 <label> Variations</label>
-                                <select class="form-control" name="variations[]" id="variation-${number}">
+                                <select class="form-control" onChange="changeOptions(event,${number})"  name="variations[]" id="variation-${number}">
 
                                     <option>Choose</option>
                                     @foreach($variations as $variation)
@@ -154,16 +158,18 @@ $('#button-repeat').on('click', function(e) {
 
 </div>`;
     $('.items').append(content);
-
+    number++;
 });
 $(document).on('click', '.delete-repeat', function() {
 
     $(this).closest(".row").remove();
     number--;
 });
-$(`#variation-${number}`).on('change', function(e) {
 
-    let selected = $(this).val();
+function changeOptions(e, num) {
+
+
+    let selected = e.target.value;
 
     const map1 = $variations.filter(function(item) {
 
@@ -172,12 +178,15 @@ $(`#variation-${number}`).on('change', function(e) {
             return item
         }
     });
+
+    console.log(map1)
+    $(`.value-${num}`).remove();
     for (let i = 0; i < map1[0].options.length; i++) {
-        $(`#option-${number}`).append('<option value=' + map1[0].options[i].id + '>' + map1[0]
-            .options[i].name +
-            '</option>');
+
+        $(`#option-${num}`).append(
+            `<option class="value-${num}" value="${map1[0].options[i].id}" > ${map1[0].options[i].name}</option>`);
     }
 
-});
+}
 </script>
 @endpush

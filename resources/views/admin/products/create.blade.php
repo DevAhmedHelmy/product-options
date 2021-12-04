@@ -48,7 +48,7 @@
                         <div id="first" class="row">
                             <div class="col">
                                 <label> Variations</label>
-                                <select class="form-control" name="variations[]" id="variation-0">
+                                <select class="form-control" name="variations[]" onChange="changeOptions(event,0)" id="variation-0">
 
                                     <option>Choose</option>
                                     @foreach($variations as $variation)
@@ -115,7 +115,7 @@ $('#button-repeat').on('click', function(e) {
     const content = `<div class="row">
                             <div class="col">
                                 <label> Variations</label>
-                                <select class="form-control" name="variations[]" id="variation-${number}">
+                                <select class="form-control" name="variations[]" onChange="changeOptions(event,${number})"  id="variation-${number}">
 
                                     <option>Choose</option>
                                     @foreach($variations as $variation)
@@ -160,6 +160,7 @@ $('#button-repeat').on('click', function(e) {
 
 
 </div>`;
+
     $('.items').append(content);
 
 });
@@ -168,9 +169,12 @@ $(document).on('click', '.delete-repeat', function() {
     $(this).closest(".row").remove();
     number--;
 });
-$(`#variation-${number}`).on('change', function(e) {
 
-    let selected = $(this).val();
+
+function changeOptions(e,num){
+
+
+    let selected = e.target.value;
 
     const map1 = $variations.filter(function(item) {
 
@@ -179,12 +183,15 @@ $(`#variation-${number}`).on('change', function(e) {
             return item
         }
     });
+
+    console.log(map1)
+    $(`.value-${num}`).remove();
     for (let i = 0; i < map1[0].options.length; i++) {
-        $(`#option-${number}`).append('<option value=' + map1[0].options[i].id + '>' + map1[0]
-            .options[i].name +
-            '</option>');
+
+        $(`#option-${num}`).append(`<option class="value-${num}" value="${map1[0].options[i].id}" > ${map1[0].options[i].name}</option>`);
     }
 
-});
+}
+
 </script>
 @endpush
